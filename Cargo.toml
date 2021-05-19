@@ -1,0 +1,19 @@
+[package]
+name = "tcx"
+version = "0.1.0"
+authors = ["Matthias Vogelgesang"]
+edition = "2018"
+
+[dependencies]
+chrono = { version = "0", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde-xml-rs = "0"
+thiserror = "1"
+
+[dev-dependencies]
+anyhow = "1"
+structopt = { version = "0", default-features = false }
+
+[[example]]
+name = "info"
+path = "bin/info.rs"
