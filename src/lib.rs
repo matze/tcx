@@ -63,6 +63,12 @@ pub struct Lap {
 
     #[serde(rename = "Track")]
     pub track: Track,
+
+    #[serde(rename = "Calories")]
+    pub calories: i32,
+
+    #[serde(rename = "Cadence")]
+    pub cadence: i32,
 }
 
 #[derive(Deserialize, Debug)]
@@ -135,5 +141,13 @@ impl Activity {
         }
 
         self.laps.iter().map(|l| l.track.heart_rate()).sum::<i32>() / self.laps.len() as i32
+    }
+
+    pub fn calories(&self) -> i32 {
+        self.laps.iter().map(|l| l.calories).sum()
+    }
+
+    pub fn cadence(&self) -> i32 {
+        self.laps.iter().map(|l| l.cadence).sum::<i32>() / self.laps.len() as i32
     }
 }
