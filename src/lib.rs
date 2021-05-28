@@ -2,6 +2,7 @@ use chrono::prelude::*;
 use serde::Deserialize;
 use std::io::Read;
 use std::time::Duration;
+use std::convert::From;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -94,6 +95,12 @@ pub struct Activities {
 pub struct Database {
     #[serde(rename = "Activities")]
     pub activities: Vec<Activities>,
+}
+
+impl From<HeartRate> for i32 {
+    fn from(heart_rate: HeartRate) -> Self {
+        heart_rate.value
+    }
 }
 
 impl Database {
