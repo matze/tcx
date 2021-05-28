@@ -1,14 +1,14 @@
 use chrono::prelude::*;
 use serde::Deserialize;
+use std::convert::From;
 use std::io::Read;
 use std::time::Duration;
-use std::convert::From;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("XML Parse error: {0}")]
-    Parse(#[from] serde_xml_rs::Error)
+    Parse(#[from] serde_xml_rs::Error),
 }
 
 #[derive(Deserialize, Debug)]
@@ -109,6 +109,16 @@ impl Database {
     }
 }
 
+impl Track {
+    pub fn heart_rate(&self) -> i32 {
+        if self.samples.len() == 0 {
+            return 0;
+        }
+
+        self.samples.iter().map(|s| s.heart_rate.value).sum::<i32>() / self.samples.len() as i32
+    }
+}
+
 impl Activity {
     pub fn distance(&self) -> f64 {
         self.laps.iter().map(|l| l.distance).sum()
@@ -117,5 +127,13 @@ impl Activity {
     pub fn duration(&self) -> chrono::Duration {
         let secs = self.laps.iter().map(|l| l.time as u64).sum();
         chrono::Duration::from_std(Duration::from_secs(secs)).unwrap()
+    }
+
+    pub fn heart_rate(&self) -> i32 {
+        if self.laps.len() == 0 {
+            return 0;
+        }
+
+        self.laps.iter().map(|l| l.track.heart_rate()).sum::<i32>() / self.laps.len() as i32
     }
 }

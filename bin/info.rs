@@ -25,6 +25,7 @@ fn main() -> Result<()> {
         println!("{:?} ({:?})", activity.sport, activity.id);
         println!("  Distance: {:.2} km", activity.distance() / 1000.0);
         println!("  Time: {:02}:{:02}:{:02}", hours, minutes, seconds);
+        println!("  Heart rate: {} bpm", activity.heart_rate());
     }
 
     Ok(())
