@@ -28,6 +28,7 @@ fn main() -> Result<()> {
         println!("  Heart rate: {} bpm", activity.heart_rate());
         println!("  Energy: {} kcal", activity.calories());
         println!("  Cadence: {} steps/min", activity.cadence());
+        println!("  Incline: ⬈ {:.1}, ⬊ {:.1} m", activity.ascent(), activity.descent());
     }
 
     Ok(())

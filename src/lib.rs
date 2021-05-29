@@ -40,6 +40,9 @@ pub struct Sample {
     #[serde(rename = "Position")]
     pub position: Option<Position>,
 
+    #[serde(rename = "AltitudeMeters")]
+    pub altitude: Option<f64>,
+
     #[serde(rename = "HeartRateBpm")]
     pub heart_rate: HeartRate,
 
@@ -115,6 +118,14 @@ impl Database {
     }
 }
 
+fn altitude_difference(a: &Sample, b: &Sample) -> Option<f64> {
+    if let (Some(a), Some(b)) = (a.altitude, b.altitude) {
+        return Some(a - b);
+    }
+
+    None
+}
+
 impl Track {
     pub fn heart_rate(&self) -> i32 {
         if self.samples.len() == 0 {
@@ -122,6 +133,24 @@ impl Track {
         }
 
         self.samples.iter().map(|s| s.heart_rate.value).sum::<i32>() / self.samples.len() as i32
+    }
+
+    /// Total ascent in meters.
+    pub fn ascent(&self) -> f64 {
+        self.samples
+            .windows(2)
+            .filter_map(|s| altitude_difference(&s[0], &s[1]))
+            .filter(|d| d > &0.0)
+            .sum()
+    }
+
+    /// Total descent in meters.
+    pub fn descent(&self) -> f64 {
+        self.samples
+            .windows(2)
+            .filter_map(|s| altitude_difference(&s[1], &s[0]))
+            .filter(|d| d > &0.0)
+            .sum()
     }
 }
 
@@ -149,5 +178,15 @@ impl Activity {
 
     pub fn cadence(&self) -> i32 {
         self.laps.iter().map(|l| l.cadence).sum::<i32>() / self.laps.len() as i32
+    }
+
+    /// Total ascent in meters.
+    pub fn ascent(&self) -> f64 {
+        self.laps.iter().map(|l| l.track.ascent()).sum()
+    }
+
+    /// Total descent in meters.
+    pub fn descent(&self) -> f64 {
+        self.laps.iter().map(|l| l.track.descent()).sum()
     }
 }
