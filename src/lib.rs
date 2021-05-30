@@ -72,6 +72,12 @@ pub struct Lap {
 
     #[serde(rename = "Cadence")]
     pub cadence: i32,
+
+    #[serde(rename = "AverageHeartRateBpm")]
+    pub average_heart_rate: HeartRate,
+
+    #[serde(rename = "MaximumHeartRateBpm")]
+    pub maximum_heart_rate: HeartRate,
 }
 
 #[derive(Deserialize, Debug)]
@@ -127,14 +133,6 @@ fn altitude_difference(a: &Sample, b: &Sample) -> Option<f64> {
 }
 
 impl Track {
-    pub fn heart_rate(&self) -> i32 {
-        if self.samples.len() == 0 {
-            return 0;
-        }
-
-        self.samples.iter().map(|s| s.heart_rate.value).sum::<i32>() / self.samples.len() as i32
-    }
-
     /// Total ascent in meters.
     pub fn ascent(&self) -> f64 {
         self.samples
@@ -165,11 +163,15 @@ impl Activity {
     }
 
     pub fn heart_rate(&self) -> i32 {
-        if self.laps.len() == 0 {
+        if self.laps.is_empty() {
             return 0;
         }
 
-        self.laps.iter().map(|l| l.track.heart_rate()).sum::<i32>() / self.laps.len() as i32
+        self.laps
+            .iter()
+            .map(|l| l.average_heart_rate.value)
+            .sum::<i32>()
+            / self.laps.len() as i32
     }
 
     pub fn calories(&self) -> i32 {
