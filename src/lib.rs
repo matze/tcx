@@ -191,4 +191,15 @@ impl Activity {
     pub fn descent(&self) -> f64 {
         self.laps.iter().map(|l| l.track.descent()).sum()
     }
+
+    /// Average tempo in minutes per km.
+    pub fn average_tempo(&self) -> Duration {
+        let secs = self.laps
+            .iter()
+            .map(|l| l.time / (l.distance / 1000.0))
+            .sum::<f64>()
+            / self.laps.len() as f64;
+
+        Duration::from_secs_f64(secs)
+    }
 }
